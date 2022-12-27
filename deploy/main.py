@@ -8,36 +8,35 @@ from deploy.facts.k8s_facts import K8sInitialized
 
 ROOT = Path(__file__).parent.parent
 
-apt.packages(
-    update=True,
-    name="Ensure packages installed",
-    packages=["curl"],
-    _sudo=True,  # use sudo when installing the packages
-)
+if "workers" in host.groups or "controlplanes" in host.groups:
+    apt.packages(
+        update=True,
+        name="Ensure packages installed",
+        packages=["curl"],
+        _sudo=True,  # use sudo when installing the packages
+    )
 
 
-local.include((ROOT / "deploy/tasks/install_docker.py").as_posix())
-
-host_ip = host.connection.get_transport().getpeername()[0]
+    local.include((ROOT / "deploy/tasks/install_docker.py").as_posix())
 
 
-server.shell(
-    name="Add apt repository for kube binaries",
-    commands=[
-        "curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg",
-        'echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list',
-    ],
-    _sudo=True,  # use sudo when installing the packages
-)
+    server.shell(
+        name="Add apt repository for kube binaries",
+        commands=[
+            "curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg",
+            'echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list',
+        ],
+        _sudo=True,  # use sudo when installing the packages
+    )
 
 
-apt.packages(
-    update=True,
-    force=True,
-    name="Ensure packages installed (kubelet, kubeadm)",
-    packages=["kubelet=1.22.4-00", "kubeadm=1.22.4-00"],
-    _sudo=True,  # useudo when installing the packages
-)
+    apt.packages(
+        update=True,
+        force=True,
+        name="Ensure packages installed (kubelet, kubeadm)",
+        packages=["kubelet=1.22.4-00", "kubeadm=1.22.4-00"],
+        _sudo=True,  # useudo when installing the packages
+    )
 
 if "controlplanes" in host.groups:
     apt.packages(

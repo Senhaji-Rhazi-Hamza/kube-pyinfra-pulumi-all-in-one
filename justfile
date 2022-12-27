@@ -4,16 +4,23 @@ fun:
   cat tmp.txt
   rm tmp.txt
 
-# they can have dependencies
-superfun: fun
-  echo "woah that was fun!"
+local_state:
+  pulumi login file:///$(pwd)/secrets/iac
 
-# and support other inline scripts
-js:
-  #!/usr/bin/env node
-  console.log('woah, seriously?')
+init_infra_stack: local_state
+  pulumi --cwd infra up --stack dev
 
-# great for pulling of things that are hard in the shell
-ruby:
-  #!/usr/bin/env ruby
-  puts "yep."
+
+install_kube_deps_on_nodes:
+  pyinfra deploy/inventory.py deploy/main.py
+
+install_kube: install_kube_deps_on_nodes
+
+git_add_update:
+  git add -u
+
+commit message: git_add_update
+  git commit -m "{{message}}"
+
+ammend:
+  git commit --amend --no-edit

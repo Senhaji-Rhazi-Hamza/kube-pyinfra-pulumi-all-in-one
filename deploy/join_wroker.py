@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from pyinfra import host
-from pyinfra import local
 from pyinfra.operations import server
 
 

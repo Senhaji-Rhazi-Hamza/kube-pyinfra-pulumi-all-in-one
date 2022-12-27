@@ -1,0 +1,17 @@
+name: infra_pulumi
+description: A minimal Google Cloud Python Pulumi program
+runtime:
+    name: python
+    options:
+        virtualenv: ../.venv
+template:
+  config:
+    gcp:project:
+      description: The Google Cloud project to deploy into
+      default: gifted-cooler-370220
+    gcp:zone:
+      description: The Google Cloud zone
+      default: europe-west9-a
+    gcp:region:
+        description: The Google Cloud zone
+        default: europe-west9
