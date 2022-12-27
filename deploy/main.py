@@ -12,7 +12,7 @@ if "workers" in host.groups or "controlplanes" in host.groups:
     apt.packages(
         update=True,
         name="Ensure packages installed",
-        packages=["curl"],
+        packages=["curl", "wget"],
         _sudo=True,  # use sudo when installing the packages
     )
 
@@ -47,41 +47,44 @@ if "controlplanes" in host.groups:
         _sudo=True,  # useudo when installing the packages
     )
 
-    if not host.get_fact(K8sInitialized):
+    if not host.get_fact(K8sInitialized):pass
 
-        server.shell(
-            _sudo=True,
-            name="initialize cluster if not",
-            commands=[
-                "cd",
-                "kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt ",
-            ],
-        )
+        # server.shell(
+        #     _sudo=True,
+        #     name="initialize cluster if not",
+        #     commands=[
+        #         "cd",
+        #         "kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt ",
+        #     ],
+        # )
 
-        server.shell(
-            _sudo=True,
-            name="install pod network",
-            commands=[
-                "cd",
-                "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt",
-            ],
-        )
+    server.shell(
+        _sudo=True,
+        name="allow user to use kubectl conf withoutsudo",
+        commands=[
+            "sudo mkdir -p $HOME/.kube",
+            "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
+            "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
+        ],
+    )
 
-        server.shell(
-            _sudo=True,
-            name="allow user to use kubectl conf withoutsudo",
-            commands=[
-                "mkdir -p $HOME/.kube",
-                "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
-                "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
-            ],
-        )
+    server.shell(
+        _sudo=True,
+        name="install pod network",
+        commands=[
+            "cd",
+            "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt",
+        ],
+    )
+
+     
 
     def callback():
 
         if "controlplanes" in host.groups:
             result = server.shell(
                 name="generate token cmd",
+                _sudo=True,
                 commands=[
                     "kubeadm token create --print-join-command  > token.txt",
                     "cat token.txt && rm token.txt",

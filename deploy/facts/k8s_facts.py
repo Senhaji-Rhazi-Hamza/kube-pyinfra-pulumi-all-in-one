@@ -7,8 +7,8 @@ class K8sInitialized(FactBase):
 
     def command(self):
         return """
-        (kubectl get nodes > /dev/null 2>&1) &&  echo 'cluster initialized'
+        (kubectl get nodes > /dev/null 2>&1) &&  echo 'true' || echo 'false'
         """
 
     def process(self, output):
-        return any(["initialized" in el for el in output])
+        return any(["true" in el for el in output])
