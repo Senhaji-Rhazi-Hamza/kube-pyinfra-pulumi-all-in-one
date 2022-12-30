@@ -12,6 +12,7 @@ with open(ROOT / "secrets/k8s/join_cmd.txt", "r") as f:
 
 
 if "workers" in host.groups:
+    # TODO shoul check if the workers are already joined or not
     server.shell(
         _sudo=True,
         name="join node",

@@ -1,0 +1,17 @@
+events {
+    }
+
+http {
+    upstream controller {
+            {% for worker_ip in workers_ips -%}
+            server    {{worker_ip}}:30080;
+            {% endfor %}
+        }
+    server {
+            listen 80;
+            location ~ /(.*) {
+                proxy_set_header Host $host;
+                proxy_pass http://controller/$1;
+            }
+        }
+}

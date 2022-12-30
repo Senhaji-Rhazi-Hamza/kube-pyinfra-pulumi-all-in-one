@@ -11,4 +11,4 @@ class K8sInitialized(FactBase):
         """
 
     def process(self, output):
-        return any(["true" in el for el in output])
+        return any(['true' in el for el in output])

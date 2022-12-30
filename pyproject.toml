@@ -18,6 +18,10 @@ pyinfra = "^2.6"
 pulumi = "^3.50.2"
 pulumi-gcp = "^6.45.0"
 
+
+[tool.poetry.group.dev.dependencies]
+black = {version = "^23.1a1", allow-prereleases = true}
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
