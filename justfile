@@ -1,8 +1,8 @@
-# behold a recipe
-fun:
-  echo "hi" > tmp.txt
-  cat tmp.txt
-  rm tmp.txt
+# define build_docker_image
+# 	docker image build --rm -t $(1):$(2) -f $(3) .
+# 	docker tag $(1):$(2) $(1):latest
+# endef
+
 
 set dotenv-load := true
 
@@ -11,8 +11,20 @@ install-python-dependencies:
   poetry install 
   poetry config virtualenvs.in-project true --local
 
+ssh-docker:
+  docker exec -it my-apo /bin/bash
+
+build-image:
+  docker image build --rm -t ${DOCKER_IMAGE}:${DOCKER_TAG} -f Dockerfile .
+  docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_USERNAMESPACE}/${DOCKER_IMAGE}:latest
+  docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_USERNAMESPACE}/${DOCKER_IMAGE}:${DOCKER_TAG}
+
+  
+
 kube-debug:
-  kubectl run -i --rm --tty debug --image=busybox --restart=Never -- sh
+  kubectl run -i --rm --tty debug --image=johnajimenez/busyboxplus  --restart=Never -- sh
+
+
 local_state:
   pulumi login file:///$(pwd)/secrets/iac
 

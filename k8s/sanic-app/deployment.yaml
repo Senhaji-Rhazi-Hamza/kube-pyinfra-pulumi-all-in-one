@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sanic-app
+  name: sanic-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sanic-app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: sanic-app
+    spec:
+      containers:
+      - image: senhajirhazi/sanic-app:0.0.1
+        name: sanic-app
+status: {}
