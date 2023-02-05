@@ -2,8 +2,8 @@ from pathlib import Path
 
 from pyinfra import host
 from pyinfra import local
-from pyinfra.operations import server, apt, python
-from pyinfra.facts.server import User
+from pyinfra.operations import server, apt, python, files
+from pyinfra.facts.server import User, Home
 from deploy.facts.k8s_facts import K8sInitialized
 
 
@@ -69,6 +69,11 @@ if "controlplanes" in host.groups:
                 "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
             ],
         )
+    files.get(
+        name="Download a file from a remote",
+        src= host.get_fact(Home) + "/.kube/config",
+        dest= (ROOT/"secrets/k8s/kubeconfig_remote").as_posix(),
+    )
 
     server.shell(
         _sudo=True,

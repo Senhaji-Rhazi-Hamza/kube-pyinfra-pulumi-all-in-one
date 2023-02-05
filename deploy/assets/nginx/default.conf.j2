@@ -4,7 +4,7 @@ events {
 http {
     upstream controller {
             {% for worker_ip in workers_ips -%}
-            server    {{worker_ip}}:30080;
+            server    {{worker_ip}}:{{ http_node_port | default(30080) }};
             {% endfor %}
         }
     server {
