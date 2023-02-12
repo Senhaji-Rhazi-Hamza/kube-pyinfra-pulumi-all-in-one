@@ -1,15 +1,13 @@
-import os
-
 from sanic import Sanic
-from sanic.response import text, json
+from sanic.response import text
 
-from lib.hello import hello
+
 
 app = Sanic("MyHelloWorldApp")
 
 @app.get("/")
 async def hello_world(request):
-    return json({"message":hello()})
+    return text("Hello world from Sanic")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

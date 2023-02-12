@@ -1,1 +1,0 @@
-def hello():return "Hello world from Sanic"
