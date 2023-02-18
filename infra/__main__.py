@@ -2,7 +2,7 @@ import pulumi
 
 from helper import prov_firewall, prov_network, prov_instance, prov_address
 
-MACHINE_NAMES = ["controle-plane", "worker-1", "worker-2", "load-balancer"]
+MACHINE_NAMES = ["control-plane", "worker-1", "worker-2", "load-balancer"]
 
 network = prov_network(network_name="default-network")
 firewall = prov_firewall(network=network, firewall_name="default-firewall")

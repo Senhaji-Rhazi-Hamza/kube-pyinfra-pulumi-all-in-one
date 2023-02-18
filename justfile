@@ -11,7 +11,7 @@ clean:
   find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 # This command aims to
 install-python-dependencies:
-  poetry install 
+  poetry install
   poetry config virtualenvs.in-project true --local
 
 ssh-docker:
