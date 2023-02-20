@@ -12,7 +12,7 @@ if "loadbalancers" in host.groups:
         force=True,
         name="Ensure nginx package installed",
         packages=["nginx"],
-        _sudo=True,  # useudo when installing the packages
+        _sudo=True,
     )
 
     files.template(
@@ -24,9 +24,8 @@ if "loadbalancers" in host.groups:
     )
 
     systemd.service(
-        "nginx",
+        service="nginx",
         running=True,
         reloaded=True,
-        _sudo=True,  
-
-        )
+        _sudo=True,
+    )

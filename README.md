@@ -25,7 +25,7 @@ Pre-requisite installs:
 ## Usage : 
 
 ### Preparation steps :
-1 - Clone the repo and delete the content of secrets/iac/* and secrets/k8s/* (your own secrets will be generated)
+1 - Clone the repo and delete the contents of secrets/iac/* and secrets/k8s/* (your own secrets will be generated)
 
 2 - Init & configure gcloud cli 
 ```
@@ -41,6 +41,7 @@ gcloud auth application-default login
 GOOGLE_PROJECT=<YOUR_GCP_PROJECT: example -> gifted-cooler-370220>
 GOOGLE_REGION=<YOUR_GCP_REGION: example -> europe-west9>
 GOOGLE_ZONE=<YOUR_GCP_ZONE: example -> europe-west9-a>
+PULUMI_CONFIG_PASSPHRASE=<YOUR_PASS_PHRASE: example -> toto>
 KUBECONFIG=${PWD}/secrets/k8s/kubeconfig
 DOCKER_IMAGE=<DOCKER_IMG_NAME: example -> my-app>
 DOCKER_TAG=0.0.0

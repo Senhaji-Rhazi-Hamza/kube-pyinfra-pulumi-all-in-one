@@ -7,6 +7,7 @@ from pyinfra.facts.server import User, Home
 from deploy.facts.k8s_facts import K8sInitialized
 
 
+
 ROOT = Path(__file__).parent.parent
 
 if "workers" in host.groups or "controlplanes" in host.groups:
@@ -14,7 +15,7 @@ if "workers" in host.groups or "controlplanes" in host.groups:
         update=True,
         name="Ensure packages installed",
         packages=["curl", "wget"],
-        _sudo=True,  # use sudo when installing the packages
+        _sudo=True,
     )
 
 
@@ -27,7 +28,7 @@ if "workers" in host.groups or "controlplanes" in host.groups:
             "curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg",
             'echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list',
         ],
-        _sudo=True,  # use sudo when installing the packages
+        _sudo=True,
     )
 
 
@@ -36,7 +37,7 @@ if "workers" in host.groups or "controlplanes" in host.groups:
         force=True,
         name="Ensure packages installed (kubelet, kubeadm)",
         packages=["kubelet=1.22.4-00", "kubeadm=1.22.4-00"],
-        _sudo=True,  # useudo when installing the packages
+        _sudo=True,
     )
 
 if "controlplanes" in host.groups:
@@ -45,42 +46,47 @@ if "controlplanes" in host.groups:
         force=True,
         name="Ensure packages installed (kubectl)",
         packages=["kubectl=1.22.4-00"],
-        _sudo=True,  # useudo when installing the packages
+        _sudo=True,
     )
 
     if not host.get_fact(K8sInitialized):
 
         server.shell(
             _sudo=True,
-            _sudo_user=host.get_fact(User),
-            name="initialize cluster if not",
+            name="Initialize cluster if not",
             commands=[
                 "cd",
                 "kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt ",
             ],
         )
-
         server.shell(
             _sudo=True,
-            name="allow user to use kubectl conf withoutsudo",
+            name="Allow user to use kubectl conf withoutsudo",
             commands=[
-                "mkdir -p $HOME/.kube",
-                "sudo cp  /etc/kubernetes/admin.conf $HOME/.kube/config",
-                "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
+                f"mkdir -p {host.get_fact(Home)}/.kube",
+                f"cp  /etc/kubernetes/admin.conf {host.get_fact(Home)}/.kube/config",
+                f"chown $(id -u):$(id -g) {host.get_fact(Home)}/.kube/config",
             ],
+        )
+        files.file(
+            _sudo=True,
+            path=host.get_fact(Home) + "/.kube/config",
+            mode=777,
+            force=True
         )
         files.get(
             name="Download a file from a remote",
             src= host.get_fact(Home) + "/.kube/config",
             dest= (ROOT/"secrets/k8s/kubeconfig").as_posix(),
+            force=True,
+            _sudo=True,
         )
 
     server.shell(
-        _sudo=True,
-        name="install pod network",
+        name="Install pod network",
         commands=[
             "cd",
-            "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt",
+            "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml > pod_network_setup.txt",
         ],
     )
      
@@ -88,7 +94,7 @@ if "controlplanes" in host.groups:
 
         if "controlplanes" in host.groups:
             result = server.shell(
-                name="generate token cmd",
+                name="Generate token cmd",
                 _sudo=True,
                 commands=[
                     "kubeadm token create --print-join-command  > token.txt",
