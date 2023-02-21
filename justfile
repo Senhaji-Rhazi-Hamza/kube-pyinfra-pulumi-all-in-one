@@ -44,14 +44,15 @@ join_workers:
   poetry run pyinfra deploy/inventory.py deploy/join_workers.py
 
 configure_loadbalancer:
-  poetry run pyinfra deploy/inventory.py deploy/loadbalancer.py
+  poetry run pyinfra deploy/inventory.py deploy/configure_loadbalancer.py
 
-configure_nginx_controller:
-  poetry run pyinfra deploy/inventory.py deploy/expose_k8s.py 
-  
-reg_certs_kubeadm:
+deploy_nginx_ingress_controller:
+  poetry run pyinfra deploy/inventory.py deploy/deploy_ingress_controller.py 
+
+expose_k8s: deploy_ingress_controller configure_loadbalancer
+
+configure_remote_kubectl:
   poetry run pyinfra deploy/inventory.py deploy/remote_kubectl.py  --limit controlplanes
-
 
 install_kube: install_kube_deps_on_nodes join_workers
 
