@@ -117,9 +117,13 @@ just configure_remote_kubectl
 # this command will :
 # 1. Regenerate certificate for kubeadm to accept the ip of the controlplane
 
-# You can then test the kubectl command locally 
+# Wait few seconds, then you can then test the kubectl command locally 
 kubectl get nodes 
 >>
+NAME            STATUS   ROLES                  AGE   VERSION
+control-plane   Ready    control-plane,master   86s   v1.22.4
+worker-1        Ready    <none>                 63s   v1.22.4
+worker-2        Ready    <none>                 63s   v1.22.4
 ```
 
 ### Step 5 : Deploy python app 
@@ -131,6 +135,11 @@ kubectl apply -f k8s/sanic-app -n default
 # 1. Deploy the python application of the repo, already built in docker hub (https://hub.docker.com/repository/docker/senhajirhazi/sanic-app/general)
 
 # then test your deployment with 
-curl -H "Host:trustme.com" http://34.163.165.22:80/sanic-app
+curl -H "Host:trustme.com" http://<ip_loadbalancer>:80/sanic-app
 >>
+{"message":"Hello world from Sanic"}%
 ```
+
+## Video of the project :
+
+You can check [Video](https://www.youtube.com/watch?v=NQJPZhEznj4) for a complete demo and some explanations 
